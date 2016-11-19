@@ -35,4 +35,18 @@ public class MapData {
     public List<LatLng> getPoints() {
         return points;
     }
+
+    public LatLng getLatLng() {
+        return getAverage(points.toArray(new LatLng[points.size()]));
+    }
+
+    public static LatLng getAverage(LatLng... latLngs) {
+        double latitude = 0, longitude = 0;
+        for (LatLng latLng : latLngs) {
+            latitude += latLng.latitude;
+            longitude += latLng.longitude;
+        }
+
+        return new LatLng(latitude / (latLngs.length + 1), longitude / (latLngs.length + 1));
+    }
 }

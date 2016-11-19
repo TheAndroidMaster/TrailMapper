@@ -8,10 +8,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
 
 public class TrailMapper extends Application implements LocationListener {
@@ -19,11 +22,15 @@ public class TrailMapper extends Application implements LocationListener {
     private LocationManager locationManager;
     private PositionData position;
 
+    private List<MapData> maps;
+
     private List<Listener> listeners;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        listeners = new ArrayList<>();
+        maps = new ArrayList<>();
     }
 
     public void startLocationUpdates() {
@@ -33,9 +40,21 @@ public class TrailMapper extends Application implements LocationListener {
         }
     }
 
+    @Nullable
+    public PositionData getPosition() {
+        return position;
+    }
+
+    public List<MapData> getMaps() {
+        return maps;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         position = new PositionData(location);
+        for (Listener listener : listeners) {
+            listener.onLocationChanged(position);
+        }
     }
 
     @Override
@@ -44,10 +63,28 @@ public class TrailMapper extends Application implements LocationListener {
 
     @Override
     public void onProviderEnabled(String s) {
+        for (Listener listener : listeners) {
+            listener.onProviderEnabled(s);
+        }
     }
 
     @Override
     public void onProviderDisabled(String s) {
+        for (Listener listener : listeners) {
+            listener.onProviderDisabled(s);
+        }
+    }
+
+    public void onMapChanged(MapData map) {
+        for (Listener listener : listeners) {
+            listener.onMapChanged(map);
+        }
+    }
+
+    public void onMapsChanged() {
+        for (Listener listener : listeners) {
+            listener.onMapsChanged();
+        }
     }
 
     public void addListener(Listener listener) {
@@ -62,5 +99,9 @@ public class TrailMapper extends Application implements LocationListener {
         void onLocationChanged(PositionData position);
         void onProviderEnabled(String s);
         void onProviderDisabled(String s);
+
+        void onMapChanged(MapData map);
+
+        void onMapsChanged();
     }
 }
