@@ -8,15 +8,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -144,8 +145,10 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     public void onMapsChanged() {
         if (map != null) {
             for (MapData mapData : getTrailMapper().getMaps()) {
+                Pair<Double, Double> coordinates = mapData.getCoordinates();
+
                 map.addMarker(new MarkerOptions()
-                        .position(mapData.getLatLng())
+                        .position(new LatLng(coordinates.first, coordinates.second))
                         .title(mapData.getName())
                         .snippet(getString(R.string.prompt_click))
                 ).setTag(mapData);
@@ -157,7 +160,6 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     public boolean onMarkerClick(Marker marker) {
         if (marker.getTag() != null && marker.getTag() instanceof MapData) {
             MapData mapData = (MapData) marker.getTag();
-            Toast.makeText(getContext(), mapData.getName(), Toast.LENGTH_SHORT).show();
         }
         return false;
     }

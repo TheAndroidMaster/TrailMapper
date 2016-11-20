@@ -21,11 +21,22 @@ public class JSONUtils {
 
         JSONArray array = map.getJSONArray("points");
         for (int i = 0; i < array.length(); i++) {
-
+            points.add(getPoint(array.getJSONObject(i)));
         }
 
         return new MapData(name, image, points);
     }
 
+    public static PointData getPoint(JSONObject point) throws JSONException {
+        float x, y;
+        double latitude, longitude;
+
+        x = (float) point.getDouble("x");
+        y = (float) point.getDouble("y");
+        latitude = point.getDouble("latitude");
+        longitude = point.getDouble("longitude");
+
+        return new PointData(x, y, latitude, longitude);
+    }
 
 }

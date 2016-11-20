@@ -1,9 +1,8 @@
 package james.trailmapper.data;
 
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.webkit.URLUtil;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,22 +42,22 @@ public class MapData {
         return points;
     }
 
-    public LatLng getLatLng() {
-        List<LatLng> latLngs = new ArrayList<>();
+    public Pair<Double, Double> getCoordinates() {
+        List<Pair<Double, Double>> coordinates = new ArrayList<>();
         for (PointData point : points) {
-            latLngs.add(point.getLatLng());
+            coordinates.add(point.getCoordinates());
         }
 
-        return getAverage(latLngs.toArray(new LatLng[points.size()]));
+        return getAverage(coordinates);
     }
 
-    public static LatLng getAverage(LatLng... latLngs) {
+    public static Pair<Double, Double> getAverage(List<Pair<Double, Double>> coordinates) {
         double latitude = 0, longitude = 0;
-        for (LatLng latLng : latLngs) {
-            latitude += latLng.latitude;
-            longitude += latLng.longitude;
+        for (Pair<Double, Double> coordinate : coordinates) {
+            latitude += coordinate.first;
+            longitude += coordinate.second;
         }
 
-        return new LatLng(latitude / (latLngs.length + 1), longitude / (latLngs.length + 1));
+        return new Pair<>(latitude / coordinates.size(), longitude / coordinates.size());
     }
 }

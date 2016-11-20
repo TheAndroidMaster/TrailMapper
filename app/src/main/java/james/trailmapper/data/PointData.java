@@ -1,16 +1,16 @@
 package james.trailmapper.data;
 
-import com.google.android.gms.maps.model.LatLng;
+import android.util.Pair;
 
 public class PointData {
 
     private float x, y;
-    private LatLng latLng;
+    private Pair<Double, Double> coordinates;
 
     public PointData(float x, float y, double latitude, double longitude) {
         this.x = x;
         this.y = y;
-        latLng = new LatLng(latitude, longitude);
+        coordinates = new Pair<>(latitude, longitude);
     }
 
     public float getX() {
@@ -21,7 +21,7 @@ public class PointData {
         return y;
     }
 
-    public LatLng getLatLng() {
-        return latLng;
+    public Pair<Double, Double> getCoordinates() {
+        return coordinates;
     }
 }
