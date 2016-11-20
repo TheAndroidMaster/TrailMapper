@@ -31,6 +31,7 @@ public class TrailMapper extends Application implements LocationListener {
         super.onCreate();
         listeners = new ArrayList<>();
         maps = new ArrayList<>();
+        startLocationUpdates();
     }
 
     public void startLocationUpdates() {

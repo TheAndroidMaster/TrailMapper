@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     @BindView(R.id.navigationView)
     BottomNavigationView navigationView;
 
+    private TrailMapper trailMapper;
     private SimplePagerAdapter adapter;
 
     @Override
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        trailMapper = (TrailMapper) getApplicationContext();
 
         adapter = new SimplePagerAdapter(getSupportFragmentManager(), new ExploreFragment(), new MapFragment(), new SettingsFragment());
         viewPager.setAdapter(adapter);
@@ -104,5 +106,11 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     @Override
     public void onMapsChanged() {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        trailMapper.startLocationUpdates();
     }
 }

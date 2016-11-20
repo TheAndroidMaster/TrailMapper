@@ -1,7 +1,13 @@
 package james.trailmapper.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,26 +24,26 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
-import james.trailmapper.TrailMapper;
 import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
 
-public class MapFragment extends SimpleFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, TrailMapper.Listener {
+public class MapFragment extends SimpleFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String MAP_BUNDLE_KEY = "mapBundleKey";
 
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.mapView)
     MapView mapView;
 
-    private TrailMapper trailMapper;
     private GoogleMap map;
+    private Snackbar snackbar;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, v);
-        trailMapper = (TrailMapper) getContext().getApplicationContext();
 
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -86,8 +92,12 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
         this.map = map;
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style));
         map.setOnMarkerClickListener(this);
-        if (trailMapper.getPosition() != null)
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(trailMapper.getPosition().getLatLng(), 13));
+        if (getTrailMapper().getPosition() != null)
+            onLocationChanged(getTrailMapper().getPosition());
+        else {
+            snackbar = Snackbar.make(coordinatorLayout, R.string.msg_getting_location, Snackbar.LENGTH_INDEFINITE);
+            snackbar.show();
+        }
         onMapsChanged();
     }
 
@@ -112,6 +122,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     @Override
     public void onLocationChanged(PositionData position) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(position.getLatLng(), 13));
+        if (snackbar != null) snackbar.dismiss();
     }
 
     @Override
@@ -132,7 +143,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     @Override
     public void onMapsChanged() {
         if (map != null) {
-            for (MapData mapData : trailMapper.getMaps()) {
+            for (MapData mapData : getTrailMapper().getMaps()) {
                 map.addMarker(new MarkerOptions()
                         .position(mapData.getLatLng())
                         .title(mapData.getName())
@@ -149,5 +160,11 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
             Toast.makeText(getContext(), mapData.getName(), Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    @Override
+    public void onSelect() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
     }
 }
