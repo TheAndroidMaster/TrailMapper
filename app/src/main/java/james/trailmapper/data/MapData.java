@@ -12,13 +12,20 @@ import java.util.List;
 public class MapData {
 
     private String name, image;
-    private List<LatLng> points;
+    private List<PointData> points;
     private boolean web;
 
-    public MapData(String name, String image, LatLng... points) {
+    public MapData(String name, String image, PointData... points) {
         this.name = name;
         this.image = image;
         this.points = new ArrayList<>(Arrays.asList(points));
+        web = URLUtil.isHttpsUrl(image);
+    }
+
+    public MapData(String name, String image, List<PointData> points) {
+        this.name = name;
+        this.image = image;
+        this.points = points;
         web = URLUtil.isHttpsUrl(image);
     }
 
@@ -32,12 +39,17 @@ public class MapData {
         } else return Drawable.createFromPath(image);
     }
 
-    public List<LatLng> getPoints() {
+    public List<PointData> getPoints() {
         return points;
     }
 
     public LatLng getLatLng() {
-        return getAverage(points.toArray(new LatLng[points.size()]));
+        List<LatLng> latLngs = new ArrayList<>();
+        for (PointData point : points) {
+            latLngs.add(point.getLatLng());
+        }
+
+        return getAverage(latLngs.toArray(new LatLng[points.size()]));
     }
 
     public static LatLng getAverage(LatLng... latLngs) {
