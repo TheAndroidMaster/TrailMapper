@@ -24,7 +24,7 @@
         </activity>
         <activity
             android:name=".activities.MapActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
