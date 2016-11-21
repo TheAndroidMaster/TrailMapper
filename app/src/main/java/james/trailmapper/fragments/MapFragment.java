@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
+import james.trailmapper.activities.MapActivity;
 import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
 
