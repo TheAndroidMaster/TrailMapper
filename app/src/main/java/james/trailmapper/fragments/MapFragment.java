@@ -1,6 +1,7 @@
 package james.trailmapper.fragments;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -146,12 +147,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
         if (map != null) {
             for (MapData mapData : getTrailMapper().getMaps()) {
                 Pair<Double, Double> coordinates = mapData.getCoordinates();
-
-                map.addMarker(new MarkerOptions()
-                        .position(new LatLng(coordinates.first, coordinates.second))
-                        .title(mapData.getName())
-                        .snippet(getString(R.string.prompt_click))
-                ).setTag(mapData);
+                map.addMarker(new MarkerOptions().position(new LatLng(coordinates.first, coordinates.second))).setTag(mapData);
             }
         }
     }
@@ -159,7 +155,9 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     @Override
     public boolean onMarkerClick(Marker marker) {
         if (marker.getTag() != null && marker.getTag() instanceof MapData) {
-            MapData mapData = (MapData) marker.getTag();
+            Intent intent = new Intent(getContext(), MapActivity.class);
+            intent.putExtra(MapActivity.EXTRA_MAP, (MapData) marker.getTag());
+            startActivity(intent);
         }
         return false;
     }
