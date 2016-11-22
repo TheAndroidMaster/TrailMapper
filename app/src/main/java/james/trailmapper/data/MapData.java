@@ -1,39 +1,40 @@
 package james.trailmapper.data;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Pair;
+import android.support.annotation.Nullable;
 import android.webkit.URLUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.bumptech.glide.DrawableTypeRequest;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MapData implements Parcelable {
 
     private String name, image;
-    private List<PointData> points;
+    private Float anchorX, anchorY;
+    private double latitude, longitude, width, height;
     private boolean web;
 
-    public MapData(String name, String image, PointData... points) {
+    public MapData(String name, String image, double latitude, double longitude, double width, double height) {
         this.name = name;
         this.image = image;
-        this.points = new ArrayList<>(Arrays.asList(points));
-        web = URLUtil.isHttpsUrl(image);
-    }
-
-    public MapData(String name, String image, List<PointData> points) {
-        this.name = name;
-        this.image = image;
-        this.points = points;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.width = width;
+        this.height = height;
         web = URLUtil.isHttpsUrl(image);
     }
 
     protected MapData(Parcel in) {
         name = in.readString();
         image = in.readString();
-        points = in.createTypedArrayList(PointData.CREATOR);
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        width = in.readDouble();
+        height = in.readDouble();
         web = in.readByte() != 0;
     }
 
@@ -49,37 +50,51 @@ public class MapData implements Parcelable {
         }
     };
 
+    public void setAnchor(float anchorX, float anchorY) {
+        this.anchorX = anchorX;
+        this.anchorY = anchorY;
+    }
+
     public String getName() {
         return name;
     }
 
+    @Nullable
     public Drawable getDrawable() {
-        if (web) {
-             return null;
-        } else return Drawable.createFromPath(image);
-    }
-
-    public List<PointData> getPoints() {
-        return points;
-    }
-
-    public Pair<Double, Double> getCoordinates() {
-        List<Pair<Double, Double>> coordinates = new ArrayList<>();
-        for (PointData point : points) {
-            coordinates.add(point.getCoordinates());
+        if (!web) {
+            try {
+                return Drawable.createFromPath(image);
+            } catch (OutOfMemoryError ignored) {
+            }
         }
 
-        return getAverage(coordinates);
+        return null;
     }
 
-    public static Pair<Double, Double> getAverage(List<Pair<Double, Double>> coordinates) {
-        double latitude = 0, longitude = 0;
-        for (Pair<Double, Double> coordinate : coordinates) {
-            latitude += coordinate.first;
-            longitude += coordinate.second;
-        }
+    @Nullable
+    public DrawableTypeRequest<String> getDrawable(Context context) {
+        if (web) return Glide.with(context).load(image);
+        else return null;
+    }
 
-        return new Pair<>(latitude / coordinates.size(), longitude / coordinates.size());
+    public float getAnchorX() {
+        return anchorX != null ? anchorX : 0.5f;
+    }
+
+    public float getAnchorY() {
+        return anchorY != null ? anchorY : 0.5f;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(latitude + (getWidth() * (0.5 - getAnchorX())), longitude + (getHeight() * (0.5 - getAnchorY())));
     }
 
     @Override
@@ -91,7 +106,10 @@ public class MapData implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
         parcel.writeString(image);
-        parcel.writeTypedList(points);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
+        parcel.writeDouble(width);
+        parcel.writeDouble(height);
         parcel.writeByte((byte) (web ? 1 : 0));
     }
 }

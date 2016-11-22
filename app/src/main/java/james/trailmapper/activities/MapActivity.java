@@ -1,24 +1,31 @@
 package james.trailmapper.activities;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.MenuItem;
 
+import com.bumptech.glide.DrawableTypeRequest;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
 import james.trailmapper.TrailMapper;
 import james.trailmapper.data.MapData;
+import james.trailmapper.utils.ImageUtils;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -46,6 +53,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setTitle(map.getName());
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -53,9 +62,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(map.getLatLng(), 15));
 
-        Pair<Double, Double> coordinates = map.getCoordinates();
-        googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(coordinates.first, coordinates.second)));
+        Drawable drawable = map.getDrawable();
+        if (drawable != null) setDrawable(drawable);
+        else {
+            DrawableTypeRequest<String> request = map.getDrawable(this);
+            if (request != null) {
+                request.into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        setDrawable(resource);
+                    }
+                });
+            }
+        }
+    }
+
+    private void setDrawable(Drawable drawable) {
+        googleMap.addGroundOverlay(new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromBitmap(ImageUtils.drawableToBitmap(drawable)))
+                .position(map.getLatLng(), (int) map.getWidth(), (int) map.getHeight())
+                .anchor(map.getAnchorX(), map.getAnchorY())
+        );
     }
 
     @Override

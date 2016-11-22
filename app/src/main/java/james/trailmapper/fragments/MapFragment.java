@@ -9,7 +9,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -124,7 +122,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
 
     @Override
     public void onLocationChanged(PositionData position) {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position.getLatLng(), 13));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position.getLatLng(), 10));
         if (snackbar != null) snackbar.dismiss();
     }
 
@@ -147,8 +145,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     public void onMapsChanged() {
         if (map != null) {
             for (MapData mapData : getTrailMapper().getMaps()) {
-                Pair<Double, Double> coordinates = mapData.getCoordinates();
-                map.addMarker(new MarkerOptions().position(new LatLng(coordinates.first, coordinates.second))).setTag(mapData);
+                map.addMarker(new MarkerOptions().position(mapData.getLatLng())).setTag(mapData);
             }
         }
     }
