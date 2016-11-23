@@ -102,7 +102,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                supportFinishAfterTransition();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -113,5 +113,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (googleMap != null && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             googleMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        supportFinishAfterTransition();
     }
 }

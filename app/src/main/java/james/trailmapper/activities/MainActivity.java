@@ -113,4 +113,9 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         trailMapper.startLocationUpdates();
     }
+
+    @Override
+    public void onBackPressed() {
+        supportFinishAfterTransition();
+    }
 }

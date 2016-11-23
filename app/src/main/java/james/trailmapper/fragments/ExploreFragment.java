@@ -33,7 +33,7 @@ public class ExploreFragment extends SimpleFragment {
 
         RecyclerView recycler = (RecyclerView) v.findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MapDataAdapter(getContext(), maps);
+        adapter = new MapDataAdapter(getActivity(), maps);
         recycler.setAdapter(adapter);
 
         return v;

@@ -3,11 +3,13 @@ package james.trailmapper.fragments;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -155,7 +157,10 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
         if (marker.getTag() != null && marker.getTag() instanceof MapData) {
             Intent intent = new Intent(getContext(), MapActivity.class);
             intent.putExtra(MapActivity.EXTRA_MAP, (MapData) marker.getTag());
-            startActivity(intent);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle());
+            else startActivity(intent);
         }
         return false;
     }
