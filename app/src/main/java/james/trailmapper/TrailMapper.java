@@ -102,6 +102,10 @@ public class TrailMapper extends Application implements LocationListener {
         return maps;
     }
 
+    public List<MapData> getOfflineMaps() {
+        return maps;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         position = new PositionData(location);

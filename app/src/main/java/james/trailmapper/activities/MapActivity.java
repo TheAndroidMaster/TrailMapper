@@ -80,7 +80,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         else {
             DrawableTypeRequest<String> request = map.getDrawable(this);
             if (request != null) {
-                request.into(new SimpleTarget<GlideDrawable>() {
+                request.thumbnail(0.1f).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         setDrawable(resource);
@@ -95,6 +95,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .image(BitmapDescriptorFactory.fromBitmap(ImageUtils.drawableToBitmap(drawable)))
                 .position(map.getLatLng(), (int) map.getWidth(), (int) map.getHeight())
                 .anchor(map.getAnchorX(), map.getAnchorY())
+                .zIndex(100)
         );
     }
 

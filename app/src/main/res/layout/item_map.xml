@@ -19,7 +19,7 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
+                android:paddingBottom="12dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="16dp"
@@ -53,6 +53,7 @@
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:scaleType="center"
+                        android:tint="?android:textColorPrimary"
                         app:srcCompat="@drawable/ic_directions" />
 
                     <TextView
@@ -79,6 +80,7 @@
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:scaleType="center"
+                        android:tint="?android:textColorPrimary"
                         app:srcCompat="@drawable/ic_download" />
 
                     <TextView

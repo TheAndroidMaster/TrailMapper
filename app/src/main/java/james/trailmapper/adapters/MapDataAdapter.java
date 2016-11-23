@@ -54,7 +54,7 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
         else {
             DrawableTypeRequest<String> request = map.getDrawable(activity);
             if (request != null) {
-                request.into(((ImageView) holder.v.findViewById(R.id.image)));
+                request.crossFade().thumbnail(0.1f).into(((ImageView) holder.v.findViewById(R.id.image)));
             }
         }
 

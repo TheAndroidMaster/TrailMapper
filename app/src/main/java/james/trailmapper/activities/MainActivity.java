@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +20,7 @@ import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
 import james.trailmapper.fragments.ExploreFragment;
 import james.trailmapper.fragments.MapFragment;
+import james.trailmapper.fragments.OfflineFragment;
 import james.trailmapper.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements TrailMapper.Listener {
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
         ButterKnife.bind(this);
         trailMapper = (TrailMapper) getApplicationContext();
 
-        adapter = new SimplePagerAdapter(getSupportFragmentManager(), new ExploreFragment(), new MapFragment(), new SettingsFragment());
+        adapter = new SimplePagerAdapter(getSupportFragmentManager(), new ExploreFragment(), new OfflineFragment(), new MapFragment(), new SettingsFragment());
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -48,11 +50,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
 
             @Override
             public void onPageSelected(int position) {
-                Menu menu = navigationView.getMenu();
-                for (int i = 0; i < menu.size(); i++) {
-                    if (i == position) menu.getItem(i).setChecked(true);
-                    else menu.getItem(i).setChecked(false);
-                }
+                ((ViewGroup) navigationView.getChildAt(0)).getChildAt(position).callOnClick();
             }
 
             @Override
@@ -72,11 +70,14 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
                     case R.id.explore:
                         viewPager.setCurrentItem(0);
                         break;
-                    case R.id.map:
+                    case R.id.offline:
                         viewPager.setCurrentItem(1);
                         break;
-                    case R.id.settings:
+                    case R.id.map:
                         viewPager.setCurrentItem(2);
+                        break;
+                    case R.id.settings:
+                        viewPager.setCurrentItem(3);
                         break;
                 }
                 return false;

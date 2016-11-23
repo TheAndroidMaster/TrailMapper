@@ -8,24 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
 import james.trailmapper.adapters.MapDataAdapter;
 import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
-import james.trailmapper.utils.PositionComparator;
 
-public class ExploreFragment extends SimpleFragment {
+public class OfflineFragment extends SimpleFragment {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    private PositionData position;
-    private List<MapData> maps;
     private MapDataAdapter adapter;
 
     @Nullable
@@ -34,11 +28,8 @@ public class ExploreFragment extends SimpleFragment {
         View v = inflater.inflate(R.layout.fragment_explore, container, false);
         ButterKnife.bind(this, v);
 
-        maps = getTrailMapper().getMaps();
-        if (position != null) Collections.sort(maps, new PositionComparator(position));
-
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MapDataAdapter(getActivity(), maps);
+        adapter = new MapDataAdapter(getActivity(), getTrailMapper().getOfflineMaps());
         recyclerView.setAdapter(adapter);
 
         return v;
@@ -51,9 +42,7 @@ public class ExploreFragment extends SimpleFragment {
 
     @Override
     public void onLocationChanged(PositionData position) {
-        this.position = position;
-        Collections.sort(maps, new PositionComparator(position));
-        adapter.notifyDataSetChanged();
+
     }
 
     @Override
