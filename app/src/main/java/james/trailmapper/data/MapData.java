@@ -11,6 +11,8 @@ import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
 
+import james.trailmapper.utils.MapUtils;
+
 public class MapData implements Parcelable {
 
     private String name, image;
@@ -35,6 +37,10 @@ public class MapData implements Parcelable {
         longitude = in.readDouble();
         width = in.readDouble();
         height = in.readDouble();
+        if (in.readByte() != 0) {
+            anchorX = in.readFloat();
+            anchorY = in.readFloat();
+        }
         web = in.readByte() != 0;
     }
 
@@ -94,7 +100,7 @@ public class MapData implements Parcelable {
     }
 
     public LatLng getLatLng() {
-        return new LatLng(latitude + (getWidth() * (0.5 - getAnchorX())), longitude + (getHeight() * (0.5 - getAnchorY())));
+        return new LatLng(latitude + (MapUtils.metersToDegrees(getWidth()) * (0.5 - getAnchorX())), longitude + (MapUtils.metersToDegrees(getHeight()) * (0.5 - getAnchorY())));
     }
 
     @Override
@@ -110,6 +116,11 @@ public class MapData implements Parcelable {
         parcel.writeDouble(longitude);
         parcel.writeDouble(width);
         parcel.writeDouble(height);
+        parcel.writeByte((byte) (anchorX != null && anchorY != null ? 1 : 0));
+        if (anchorX != null && anchorY != null) {
+            parcel.writeFloat(anchorX);
+            parcel.writeFloat(anchorY);
+        }
         parcel.writeByte((byte) (web ? 1 : 0));
     }
 }

@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -42,6 +43,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.map)
+    View mapView;
 
     private TrailMapper trailMapper;
     private MapData map;
@@ -62,13 +65,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+        mapView.setAlpha(0);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(map.getLatLng(), 15));
+        googleMap.setBuildingsEnabled(false);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getLatLng(), 15));
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             googleMap.setMyLocationEnabled(true);
@@ -88,6 +97,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
             }
         }
+
+        mapView.animate().alpha(1).setDuration(500).setStartDelay(500).start();
     }
 
     private void setDrawable(Drawable drawable) {
@@ -112,6 +123,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        trailMapper.startLocationUpdates();
         if (googleMap != null && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             googleMap.setMyLocationEnabled(true);
     }
