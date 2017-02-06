@@ -55,9 +55,11 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
 
         ((TextView) holder.v.findViewById(R.id.title)).setText(map.getName());
         ((TextView) holder.v.findViewById(R.id.offlineText)).setText(map.isOffline() ? R.string.action_delete : R.string.action_save);
+
         ImageView offlineImage = (ImageView) holder.v.findViewById(R.id.offlineImage);
         offlineImage.setVisibility(View.VISIBLE);
         offlineImage.setImageResource(map.isOffline() ? R.drawable.ic_delete : R.drawable.ic_download);
+
         holder.v.findViewById(R.id.offlineProgress).setVisibility(View.GONE);
 
         DrawableTypeRequest request = map.getDrawable(activity);
