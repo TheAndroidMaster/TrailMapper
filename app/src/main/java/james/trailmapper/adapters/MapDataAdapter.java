@@ -2,7 +2,6 @@ package james.trailmapper.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -16,25 +15,33 @@ import android.widget.TextView;
 import com.bumptech.glide.DrawableTypeRequest;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import james.trailmapper.R;
+import james.trailmapper.TrailMapper;
 import james.trailmapper.activities.MapActivity;
 import james.trailmapper.data.MapData;
 
 public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHolder> {
 
     private Activity activity;
+    private TrailMapper trailMapper;
     private List<MapData> maps;
 
     public MapDataAdapter(Activity activity, List<MapData> maps) {
         this.activity = activity;
+        trailMapper = (TrailMapper) activity.getApplicationContext();
         this.maps = maps;
     }
 
     public void setMaps(List<MapData> maps) {
         this.maps = maps;
         notifyDataSetChanged();
+    }
+
+    public List<MapData> getMaps() {
+        return new ArrayList<>(maps);
     }
 
     @Override
@@ -47,15 +54,12 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
         MapData map = maps.get(position);
 
         ((TextView) holder.v.findViewById(R.id.title)).setText(map.getName());
+        ((TextView) holder.v.findViewById(R.id.offlineText)).setText(map.isOffline() ? R.string.action_delete : R.string.action_save);
+        ((ImageView) holder.v.findViewById(R.id.offlineImage)).setImageResource(map.isOffline() ? R.drawable.ic_delete : R.drawable.ic_download);
 
-        Drawable drawable = map.getDrawable();
-        if (drawable != null)
-            ((ImageView) holder.v.findViewById(R.id.image)).setImageDrawable(drawable);
-        else {
-            DrawableTypeRequest<String> request = map.getDrawable(activity);
-            if (request != null) {
-                request.crossFade().thumbnail(0.1f).into(((ImageView) holder.v.findViewById(R.id.image)));
-            }
+        DrawableTypeRequest request = map.getDrawable(activity);
+        if (request != null) {
+            request.crossFade().thumbnail(0.1f).into(((ImageView) holder.v.findViewById(R.id.image)));
         }
 
         holder.v.findViewById(R.id.action_directions).setOnClickListener(new View.OnClickListener() {
@@ -76,7 +80,13 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
         holder.v.findViewById(R.id.action_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                int position = holder.getAdapterPosition();
+                if (position >= 0 && position < maps.size()) {
+                    MapData mapData = maps.get(position);
+                    if (mapData.isOffline())
+                        trailMapper.removeOfflineMap(mapData);
+                    else trailMapper.addOfflineMap(mapData);
+                }
             }
         });
 

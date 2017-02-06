@@ -10,5 +10,6 @@
     <string name="action_view">View</string>
     <string name="action_get_directions">Get Directions</string>
     <string name="action_save">Save Offline</string>
+    <string name="action_delete">Remove</string>
     <string name="title_offline">Offline</string>
 </resources>

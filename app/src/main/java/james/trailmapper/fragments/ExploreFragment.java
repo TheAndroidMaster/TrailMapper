@@ -68,11 +68,13 @@ public class ExploreFragment extends SimpleFragment {
 
     @Override
     public void onMapChanged(MapData map) {
-
+        List<MapData> maps = adapter.getMaps();
+        if (maps.contains(map))
+            adapter.notifyItemChanged(maps.indexOf(map));
     }
 
     @Override
     public void onMapsChanged() {
-
+        adapter.notifyDataSetChanged();
     }
 }

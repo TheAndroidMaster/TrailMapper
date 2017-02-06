@@ -1,24 +1,22 @@
 package james.trailmapper.data;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.webkit.URLUtil;
 
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
+
 import james.trailmapper.utils.MapUtils;
 
 public class MapData implements Parcelable {
 
-    private String name, image;
-    private Float anchorX, anchorY;
-    private double latitude, longitude, width, height;
-    private boolean web;
+    public String name, image, offlineImage;
+    public Float anchorX, anchorY;
+    public double latitude, longitude, width, height;
 
     public MapData(String name, String image, double latitude, double longitude, double width, double height) {
         this.name = name;
@@ -27,7 +25,6 @@ public class MapData implements Parcelable {
         this.longitude = longitude;
         this.width = width;
         this.height = height;
-        web = URLUtil.isHttpsUrl(image);
     }
 
     protected MapData(Parcel in) {
@@ -41,7 +38,6 @@ public class MapData implements Parcelable {
             anchorX = in.readFloat();
             anchorY = in.readFloat();
         }
-        web = in.readByte() != 0;
     }
 
     public static final Creator<MapData> CREATOR = new Creator<MapData>() {
@@ -65,22 +61,12 @@ public class MapData implements Parcelable {
         return name;
     }
 
-    @Nullable
-    public Drawable getDrawable() {
-        if (!web) {
-            try {
-                return Drawable.createFromPath(image);
-            } catch (OutOfMemoryError ignored) {
-            }
-        }
-
-        return null;
+    public DrawableTypeRequest getDrawable(Context context) {
+        return isOffline() ? Glide.with(context).load(new File(context.getApplicationInfo().dataDir, offlineImage)) : Glide.with(context).load(image);
     }
 
-    @Nullable
-    public DrawableTypeRequest<String> getDrawable(Context context) {
-        if (web) return Glide.with(context).load(image);
-        else return null;
+    public boolean isOffline() {
+        return offlineImage != null;
     }
 
     public float getAnchorX() {
@@ -121,6 +107,10 @@ public class MapData implements Parcelable {
             parcel.writeFloat(anchorX);
             parcel.writeFloat(anchorY);
         }
-        parcel.writeByte((byte) (web ? 1 : 0));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) || (obj instanceof MapData && ((MapData) obj).getName().equals(getName()));
     }
 }

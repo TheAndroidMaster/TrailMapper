@@ -84,18 +84,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         else
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
-        Drawable drawable = map.getDrawable();
-        if (drawable != null) setDrawable(drawable);
-        else {
-            DrawableTypeRequest<String> request = map.getDrawable(this);
-            if (request != null) {
-                request.thumbnail(0.1f).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        setDrawable(resource);
-                    }
-                });
-            }
+        DrawableTypeRequest request = map.getDrawable(this);
+        if (request != null) {
+            request.thumbnail(0.1f).into(new SimpleTarget<GlideDrawable>() {
+                @Override
+                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                    setDrawable(resource);
+                }
+            });
         }
 
         mapView.animate().alpha(1).setDuration(500).setStartDelay(500).start();

@@ -57,11 +57,11 @@ public class OfflineFragment extends SimpleFragment {
 
     @Override
     public void onMapChanged(MapData map) {
-
+        onMapsChanged();
     }
 
     @Override
     public void onMapsChanged() {
-
+        adapter.setMaps(getTrailMapper().getOfflineMaps());
     }
 }
