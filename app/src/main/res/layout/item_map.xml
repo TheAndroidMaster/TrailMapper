@@ -37,7 +37,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
 
                 <LinearLayout
                     android:id="@+id/action_directions"
@@ -52,6 +54,8 @@
                     <android.support.v7.widget.AppCompatImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
                         android:scaleType="center"
                         android:tint="?android:textColorPrimary"
                         app:srcCompat="@drawable/ic_directions" />
@@ -80,6 +84,8 @@
                         android:id="@+id/offlineImage"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
                         android:scaleType="center"
                         android:tint="?android:textColorPrimary"
                         app:srcCompat="@drawable/ic_download" />
