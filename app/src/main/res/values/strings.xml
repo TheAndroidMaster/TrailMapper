@@ -12,4 +12,5 @@
     <string name="action_save">Save Offline</string>
     <string name="action_delete">Remove</string>
     <string name="title_offline">Offline</string>
+    <string name="title_downloading">Downloading…</string>
 </resources>

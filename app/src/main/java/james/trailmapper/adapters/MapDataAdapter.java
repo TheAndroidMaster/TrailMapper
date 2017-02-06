@@ -55,7 +55,10 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
 
         ((TextView) holder.v.findViewById(R.id.title)).setText(map.getName());
         ((TextView) holder.v.findViewById(R.id.offlineText)).setText(map.isOffline() ? R.string.action_delete : R.string.action_save);
-        ((ImageView) holder.v.findViewById(R.id.offlineImage)).setImageResource(map.isOffline() ? R.drawable.ic_delete : R.drawable.ic_download);
+        ImageView offlineImage = (ImageView) holder.v.findViewById(R.id.offlineImage);
+        offlineImage.setVisibility(View.VISIBLE);
+        offlineImage.setImageResource(map.isOffline() ? R.drawable.ic_delete : R.drawable.ic_download);
+        holder.v.findViewById(R.id.offlineProgress).setVisibility(View.GONE);
 
         DrawableTypeRequest request = map.getDrawable(activity);
         if (request != null) {
@@ -69,11 +72,13 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
                 if (position < 0 || position >= maps.size()) return;
 
                 LatLng latLng = maps.get(position).getLatLng();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude)));
                 intent.setPackage("com.google.android.apps.maps");
 
-                if (intent.resolveActivity(activity.getPackageManager()) != null)
-                    activity.startActivity(intent);
+                if (intent.resolveActivity(activity.getPackageManager()) == null) //might not have google maps, use standard geo uri
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude)));
+
+                activity.startActivity(intent);
             }
         });
 
@@ -83,9 +88,13 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
                 int position = holder.getAdapterPosition();
                 if (position >= 0 && position < maps.size()) {
                     MapData mapData = maps.get(position);
-                    if (mapData.isOffline())
-                        trailMapper.removeOfflineMap(mapData);
-                    else trailMapper.addOfflineMap(mapData);
+                    if (!mapData.isOffline()) {
+                        trailMapper.addOfflineMap(mapData);
+
+                        ((TextView) holder.v.findViewById(R.id.offlineText)).setText(R.string.title_downloading);
+                        holder.v.findViewById(R.id.offlineProgress).setVisibility(View.VISIBLE);
+                        holder.v.findViewById(R.id.offlineImage).setVisibility(View.GONE);
+                    } else trailMapper.removeOfflineMap(mapData);
                 }
             }
         });
