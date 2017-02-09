@@ -24,7 +24,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.MapStyleOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,8 +33,6 @@ import james.trailmapper.data.MapData;
 import james.trailmapper.utils.ImageUtils;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    private GoogleMap googleMap;
 
     public static final String EXTRA_MAP = "james.trailmapper.EXTRA_MAP";
 
@@ -47,6 +44,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     View mapView;
 
     private TrailMapper trailMapper;
+    private GoogleMap googleMap;
     private MapData map;
 
     @Override
@@ -75,8 +73,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style));
-        googleMap.setBuildingsEnabled(false);
+        trailMapper.applySettings(googleMap);
+
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getLatLng(), 15));
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)

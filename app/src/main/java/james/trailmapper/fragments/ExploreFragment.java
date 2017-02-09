@@ -77,4 +77,9 @@ public class ExploreFragment extends SimpleFragment {
     public void onMapsChanged() {
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onPreferenceChanged() {
+
+    }
 }

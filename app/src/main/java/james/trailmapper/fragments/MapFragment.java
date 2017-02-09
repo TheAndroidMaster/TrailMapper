@@ -15,13 +15,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
+import james.trailmapper.TrailMapper;
 import james.trailmapper.activities.MapActivity;
 import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
@@ -35,12 +35,14 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     @BindView(R.id.mapView)
     MapView mapView;
 
+    private TrailMapper trailMapper;
     private GoogleMap map;
     private Snackbar snackbar;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        trailMapper = (TrailMapper) getContext().getApplicationContext();
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, v);
 
@@ -89,7 +91,7 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
-        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style));
+        trailMapper.applySettings(map);
         map.setOnMarkerClickListener(this);
         if (getTrailMapper().getPosition() != null)
             onLocationChanged(getTrailMapper().getPosition());
@@ -146,6 +148,11 @@ public class MapFragment extends SimpleFragment implements OnMapReadyCallback, G
                 map.addMarker(new MarkerOptions().position(mapData.getLatLng())).setTag(mapData);
             }
         }
+    }
+
+    @Override
+    public void onPreferenceChanged() {
+        trailMapper.applySettings(map);
     }
 
     @Override

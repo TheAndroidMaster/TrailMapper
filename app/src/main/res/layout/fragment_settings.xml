@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="james.trailmapper.TrailMapper" />
+
+        <import type="android.support.v7.widget.SwitchCompat" />
+
+        <variable
+            name="trailMapper"
+            type="TrailMapper" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="12dp">
+
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_traffic"
+                android:checked="@{trailMapper.isTrafficEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setTrafficEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_buildings"
+                android:checked="@{trailMapper.isBuildingsEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setBuildingsEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_location"
+                android:checked="@{trailMapper.isLocationEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setLocationEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_compass"
+                android:checked="@{trailMapper.isCompassEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setCompassEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_location_button"
+                android:checked="@{trailMapper.isLocationButtonEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setLocationButtonEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_zoom_controls"
+                android:checked="@{trailMapper.isZoomControlsEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setZoomControlsEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_rotation_gestures"
+                android:checked="@{trailMapper.isRotateGestureEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setRotateGestureEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_tilt_gestures"
+                android:checked="@{trailMapper.isTiltGestureEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setTiltGestureEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_zoom_gestures"
+                android:checked="@{trailMapper.isZoomGestureEnabled()}"
+                android:onClick="@{(view) -> trailMapper.setZoomGestureEnabled(TrailMapper.castToSwitch(view).isChecked())}"
+                android:padding="12dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

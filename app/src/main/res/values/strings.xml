@@ -13,4 +13,14 @@
     <string name="action_delete">Remove</string>
     <string name="title_offline">Offline</string>
     <string name="title_downloading">Downloading…</string>
+    <string name="setting_traffic">Show Traffic</string>
+    <string name="setting_buildings">Show Buildings</string>
+    <string name="setting_location">Show Location on Map</string>
+    <string name="setting_compass">Display Compass Icon</string>
+    <string name="setting_toolbar">Show Toolbar</string>
+    <string name="setting_location_button">Show Location Button</string>
+    <string name="setting_zoom_controls">Display Zoom Controls</string>
+    <string name="setting_rotation_gestures">Enable Rotation Gestures</string>
+    <string name="setting_tilt_gestures">Enable Tilt Gestures</string>
+    <string name="setting_zoom_gestures">Enable Zoom Gestures</string>
 </resources>

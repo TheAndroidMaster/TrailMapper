@@ -64,4 +64,9 @@ public class OfflineFragment extends SimpleFragment {
     public void onMapsChanged() {
         adapter.setMaps(getTrailMapper().getOfflineMaps());
     }
+
+    @Override
+    public void onPreferenceChanged() {
+
+    }
 }

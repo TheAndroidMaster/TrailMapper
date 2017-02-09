@@ -15,10 +15,16 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
+import android.support.v7.widget.SwitchCompat;
+import android.view.View;
 
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -37,9 +43,23 @@ import java.util.List;
 import james.trailmapper.data.MapData;
 import james.trailmapper.data.PositionData;
 
-public class TrailMapper extends Application implements LocationListener {
+public class TrailMapper extends Application implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static String MAPS_URL = "https://theandroidmaster.github.io/TrailMaps/maps.json";
+    private static final String URL_MAPS = "https://theandroidmaster.github.io/TrailMaps/maps.json";
+
+    private static final String KEY_OFFLINE_MAPS = "offline";
+
+    private static final String KEY_MAP_TRAFFIC = "traffic";
+    private static final String KEY_MAP_BUILDINGS = "buildings";
+    private static final String KEY_MAP_LOCATION = "location";
+
+    private static final String KEY_UI_COMPASS = "compass";
+    private static final String KEY_UI_LOCATION = "locationButton";
+    private static final String KEY_UI_ZOOM = "zoomButton";
+
+    private static final String KEY_GESTURE_ROTATE = "rotateGesture";
+    private static final String KEY_GESTURE_TILT = "tiltGesture";
+    private static final String KEY_GESTURE_ZOOM = "zoomGesture";
 
     private LocationManager locationManager;
     private SharedPreferences prefs;
@@ -54,7 +74,10 @@ public class TrailMapper extends Application implements LocationListener {
     @Override
     public void onCreate() {
         super.onCreate();
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
         gson = new Gson();
         listeners = new ArrayList<>();
         maps = new ArrayList<>();
@@ -67,7 +90,7 @@ public class TrailMapper extends Application implements LocationListener {
                 String response = "";
 
                 try {
-                    URL url = new URL(MAPS_URL);
+                    URL url = new URL(URL_MAPS);
                     URLConnection con = url.openConnection();
                     con.connect();
 
@@ -109,7 +132,7 @@ public class TrailMapper extends Application implements LocationListener {
             }
         }.start();
 
-        String json = prefs.getString("offline", "");
+        String json = prefs.getString(KEY_OFFLINE_MAPS, "");
         try {
             JSONArray array = new JSONArray(json);
             for (int i = 0; i < array.length(); i++) {
@@ -118,6 +141,12 @@ public class TrailMapper extends Application implements LocationListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onTerminate() {
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
+        super.onTerminate();
     }
 
     public void startLocationUpdates() {
@@ -190,7 +219,7 @@ public class TrailMapper extends Application implements LocationListener {
 
     private void saveOfflineMaps() {
         MapData[] mapDatas = offlineMaps.toArray(new MapData[offlineMaps.size()]);
-        prefs.edit().putString("offline", gson.toJson(mapDatas)).apply();
+        prefs.edit().putString(KEY_OFFLINE_MAPS, gson.toJson(mapDatas)).apply();
     }
 
     @Override
@@ -231,6 +260,102 @@ public class TrailMapper extends Application implements LocationListener {
         }
     }
 
+    public void applySettings(GoogleMap map) {
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style));
+        map.setTrafficEnabled(isTrafficEnabled());
+        map.setBuildingsEnabled(isBuildingsEnabled());
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED)
+            map.setMyLocationEnabled(isLocationEnabled());
+
+        UiSettings settings = map.getUiSettings();
+
+        settings.setCompassEnabled(isCompassEnabled());
+        settings.setMapToolbarEnabled(false);
+        settings.setMyLocationButtonEnabled(isLocationButtonEnabled());
+        settings.setZoomControlsEnabled(isZoomControlsEnabled());
+
+        settings.setRotateGesturesEnabled(isRotateGestureEnabled());
+        settings.setTiltGesturesEnabled(isTiltGestureEnabled());
+        settings.setZoomGesturesEnabled(isZoomGestureEnabled());
+    }
+
+    public boolean isTrafficEnabled() {
+        return prefs.getBoolean(KEY_MAP_TRAFFIC, false);
+    }
+
+    public boolean isBuildingsEnabled() {
+        return prefs.getBoolean(KEY_MAP_BUILDINGS, false);
+    }
+
+    public boolean isLocationEnabled() {
+        return prefs.getBoolean(KEY_MAP_LOCATION, true);
+    }
+
+    public boolean isCompassEnabled() {
+        return prefs.getBoolean(KEY_UI_COMPASS, true);
+    }
+
+    public boolean isLocationButtonEnabled() {
+        return prefs.getBoolean(KEY_UI_LOCATION, true);
+    }
+
+    public boolean isZoomControlsEnabled() {
+        return prefs.getBoolean(KEY_UI_ZOOM, true);
+    }
+
+    public boolean isRotateGestureEnabled() {
+        return prefs.getBoolean(KEY_GESTURE_ROTATE, true);
+    }
+
+    public boolean isTiltGestureEnabled() {
+        return prefs.getBoolean(KEY_GESTURE_TILT, false);
+    }
+
+    public boolean isZoomGestureEnabled() {
+        return prefs.getBoolean(KEY_GESTURE_ZOOM, true);
+    }
+
+    public void setTrafficEnabled(boolean isTrafficEnabled) {
+        prefs.edit().putBoolean(KEY_MAP_TRAFFIC, isTrafficEnabled).apply();
+    }
+
+    public void setBuildingsEnabled(boolean isBuildingsEnabled) {
+        prefs.edit().putBoolean(KEY_MAP_BUILDINGS, isBuildingsEnabled).apply();
+    }
+
+    public void setLocationEnabled(boolean isLocationEnabled) {
+        prefs.edit().putBoolean(KEY_MAP_LOCATION, isLocationEnabled).apply();
+    }
+
+    public void setCompassEnabled(boolean isCompassEnabled) {
+        prefs.edit().putBoolean(KEY_UI_COMPASS, isCompassEnabled).apply();
+    }
+
+    public void setLocationButtonEnabled(boolean isLocationButtonEnabled) {
+        prefs.edit().putBoolean(KEY_UI_LOCATION, isLocationButtonEnabled).apply();
+    }
+
+    public void setZoomControlsEnabled(boolean isZoomControlsEnabled) {
+        prefs.edit().putBoolean(KEY_UI_ZOOM, isZoomControlsEnabled).apply();
+    }
+
+    public void setRotateGestureEnabled(boolean isRotateGestureEnabled) {
+        prefs.edit().putBoolean(KEY_GESTURE_ROTATE, isRotateGestureEnabled).apply();
+    }
+
+    public void setTiltGestureEnabled(boolean isTiltGestureEnabled) {
+        prefs.edit().putBoolean(KEY_GESTURE_TILT, isTiltGestureEnabled).apply();
+    }
+
+    public void setZoomGestureEnabled(boolean isZoomGestureEnabled) {
+        prefs.edit().putBoolean(KEY_GESTURE_ZOOM, isZoomGestureEnabled).apply();
+    }
+
+    public static SwitchCompat castToSwitch(View view) {
+        return (SwitchCompat) view; //this really shouldn't be necessary but I'm too lazy to read docs
+    }
+
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
@@ -239,11 +364,20 @@ public class TrailMapper extends Application implements LocationListener {
         listeners.remove(listener);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        for (Listener listener : listeners) {
+            listener.onPreferenceChanged();
+        }
+    }
+
     public interface Listener {
         void onLocationChanged(PositionData position);
         void onProviderEnabled(String s);
         void onProviderDisabled(String s);
         void onMapChanged(MapData map);
         void onMapsChanged();
+
+        void onPreferenceChanged();
     }
 }

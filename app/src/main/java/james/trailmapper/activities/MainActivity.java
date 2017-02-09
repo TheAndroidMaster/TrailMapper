@@ -110,6 +110,11 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     }
 
     @Override
+    public void onPreferenceChanged() {
+
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         trailMapper.startLocationUpdates();
