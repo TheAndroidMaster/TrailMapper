@@ -22,11 +22,12 @@ import james.trailmapper.fragments.ExploreFragment;
 import james.trailmapper.fragments.MapFragment;
 import james.trailmapper.fragments.OfflineFragment;
 import james.trailmapper.fragments.SettingsFragment;
+import james.trailmapper.views.SimpleViewPager;
 
 public class MainActivity extends AppCompatActivity implements TrailMapper.Listener {
 
     @BindView(R.id.viewPager)
-    ViewPager viewPager;
+    SimpleViewPager viewPager;
     @BindView(R.id.navigationView)
     BottomNavigationView navigationView;
 
