@@ -1,6 +1,5 @@
 package james.trailmapper.adapters;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
@@ -10,17 +9,18 @@ import java.util.List;
 
 import james.trailmapper.fragments.SimpleFragment;
 
-public class SimplePagerAdapter extends FragmentStatePagerAdapter {
+public class SimplePagerAdapter<T extends SimpleFragment> extends FragmentStatePagerAdapter {
 
-    private List<SimpleFragment> fragments;
+    private List<T> fragments;
 
-    public SimplePagerAdapter(FragmentManager fm, SimpleFragment... fragments) {
+    @SafeVarargs
+    public SimplePagerAdapter(FragmentManager fm, T... fragments) {
         super(fm);
         this.fragments = new ArrayList<>(Arrays.asList(fragments));
     }
 
     @Override
-    public SimpleFragment getItem(int position) {
+    public T getItem(int position) {
         return fragments.get(position);
     }
 
