@@ -15,8 +15,8 @@ import james.trailmapper.utils.MapUtils;
 public class MapData implements Parcelable {
 
     public String name, image, offlineImage;
-    public Float anchorX, anchorY;
-    public double latitude, longitude, width, height;
+    private Float anchorX, anchorY;
+    private double latitude, longitude, width, height;
 
     public MapData(String name, String image, double latitude, double longitude, double width, double height) {
         this.name = name;
@@ -30,6 +30,8 @@ public class MapData implements Parcelable {
     protected MapData(Parcel in) {
         name = in.readString();
         image = in.readString();
+        if (in.readByte() != 0)
+            offlineImage = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
         width = in.readDouble();
@@ -98,6 +100,9 @@ public class MapData implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
         parcel.writeString(image);
+        parcel.writeByte((byte) (isOffline() ? 1 : 0));
+        if (isOffline())
+            parcel.writeString(offlineImage);
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
         parcel.writeDouble(width);
@@ -111,6 +116,6 @@ public class MapData implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj) || (obj instanceof MapData && ((MapData) obj).getName().equals(getName()));
+        return super.equals(obj) || (obj != null && obj instanceof MapData && ((MapData) obj).getName().equals(getName()));
     }
 }

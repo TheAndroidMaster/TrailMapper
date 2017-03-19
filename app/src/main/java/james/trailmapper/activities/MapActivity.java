@@ -1,8 +1,11 @@
 package james.trailmapper.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -24,15 +28,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import james.trailmapper.R;
 import james.trailmapper.TrailMapper;
 import james.trailmapper.data.MapData;
+import james.trailmapper.data.PositionData;
 import james.trailmapper.utils.ImageUtils;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, TrailMapper.Listener {
 
     public static final String EXTRA_MAP = "james.trailmapper.EXTRA_MAP";
 
@@ -47,12 +53,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private MapData map;
 
+    private MenuItem download;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
         trailMapper = (TrailMapper) getApplicationContext();
+        trailMapper.addListener(this);
 
         map = getIntent().getParcelableExtra(EXTRA_MAP);
 
@@ -68,6 +77,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
         mapView.setAlpha(0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        trailMapper.removeListener(this);
+        super.onDestroy();
     }
 
     @Override
@@ -105,10 +120,44 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        menu.findItem(R.id.action_directions).setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_directions, Color.WHITE));
+
+        download = menu.findItem(R.id.action_download);
+        if (map.isOffline()) {
+            download.setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_delete, Color.WHITE));
+            download.setTitle(R.string.action_delete);
+        } else {
+            download.setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_download, Color.WHITE));
+            download.setTitle(R.string.action_save);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 supportFinishAfterTransition();
+                break;
+            case R.id.action_directions:
+                LatLng latLng = map.getLatLng();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude)));
+                intent.setPackage("com.google.android.apps.maps");
+
+                if (intent.resolveActivity(getPackageManager()) == null) //might not have google maps, use standard geo uri
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude)));
+
+                startActivity(intent);
+                break;
+            case R.id.action_download:
+                if (!map.isOffline()) {
+                    trailMapper.addOfflineMap(map);
+                    item.setTitle(R.string.title_downloading);
+                } else trailMapper.removeOfflineMap(map);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -125,5 +174,39 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed() {
         supportFinishAfterTransition();
+    }
+
+    @Override
+    public void onLocationChanged(PositionData position) {
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+    }
+
+    @Override
+    public void onMapChanged(MapData map) {
+        if (map.equals(this.map)) {
+            this.map = map;
+            if (map.isOffline()) {
+                download.setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_delete, Color.WHITE));
+                download.setTitle(R.string.action_delete);
+            } else {
+                download.setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_download, Color.WHITE));
+                download.setTitle(R.string.action_save);
+            }
+        }
+    }
+
+    @Override
+    public void onMapsChanged() {
+    }
+
+    @Override
+    public void onPreferenceChanged() {
     }
 }
