@@ -249,6 +249,7 @@ public class TrailMapper extends Application implements LocationListener, Shared
     }
 
     public void onMapChanged(MapData map) {
+        maps.set(maps.indexOf(map), map);
         for (Listener listener : listeners) {
             listener.onMapChanged(map);
         }
