@@ -24,6 +24,7 @@ import james.trailmapper.fragments.ExploreFragment;
 import james.trailmapper.fragments.MapFragment;
 import james.trailmapper.fragments.OfflineFragment;
 import james.trailmapper.fragments.SettingsFragment;
+import james.trailmapper.fragments.SimpleFragment;
 import james.trailmapper.utils.ImageUtils;
 import james.trailmapper.views.SimpleViewPager;
 
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     BottomNavigationView navigationView;
 
     private TrailMapper trailMapper;
-    private SimplePagerAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,8 +44,13 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
         ButterKnife.bind(this);
         trailMapper = (TrailMapper) getApplicationContext();
 
-        adapter = new SimplePagerAdapter(getSupportFragmentManager(), new ExploreFragment(), new OfflineFragment(), new MapFragment(), new SettingsFragment());
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(new SimplePagerAdapter<SimpleFragment>(
+                getSupportFragmentManager(),
+                new ExploreFragment(),
+                new OfflineFragment(),
+                new MapFragment(),
+                new SettingsFragment()
+        ));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
