@@ -15,8 +15,11 @@ import james.trailmapper.utils.MapUtils;
 public class MapData implements Parcelable {
 
     public String name, image, offlineImage;
-    private Float anchorX, anchorY;
-    private double latitude, longitude, width, height;
+    public Float anchorX, anchorY;
+    public double latitude, longitude, width, height;
+
+    public MapData() {
+    }
 
     public MapData(String name, String image, double latitude, double longitude, double width, double height) {
         this.name = name;

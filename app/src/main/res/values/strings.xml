@@ -13,12 +13,17 @@
     <string name="title_downloading">Downloading…</string>
 
     <string name="prompt_click">Click to view…</string>
+    <string name="prompt_map_name">Map Name…</string>
+    <string name="prompt_no_image_selected">No image selected…</string>
+    <string name="msg_same_name">You can\'t make two maps with the same name!</string>
     <string name="msg_getting_location">Searching for location…</string>
 
     <string name="action_view">View</string>
     <string name="action_get_directions">Get Directions</string>
     <string name="action_save">Save Offline</string>
     <string name="action_delete">Remove</string>
+    <string name="action_select_image">Select Image</string>
+    <string name="action_take_picture">Take Picture</string>
 
     <string name="setting_traffic">Show Traffic</string>
     <string name="setting_buildings">Show Buildings</string>
@@ -30,4 +35,5 @@
     <string name="setting_rotation_gestures">Enable Rotation Gestures</string>
     <string name="setting_tilt_gestures">Enable Tilt Gestures</string>
     <string name="setting_zoom_gestures">Enable Zoom Gestures</string>
+    <string name="action_new_map">New Map</string>
 </resources>
