@@ -1,6 +1,7 @@
 package james.trailmapper.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import james.trailmapper.fragments.ExploreFragment;
 import james.trailmapper.fragments.MapFragment;
 import james.trailmapper.fragments.OfflineFragment;
 import james.trailmapper.fragments.SettingsFragment;
+import james.trailmapper.utils.ImageUtils;
 import james.trailmapper.views.SimpleViewPager;
 
 public class MainActivity extends AppCompatActivity implements TrailMapper.Listener {
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_new_map).setIcon(ImageUtils.getVectorDrawable(this, R.drawable.ic_add, Color.WHITE));
         return super.onCreateOptionsMenu(menu);
     }
 
