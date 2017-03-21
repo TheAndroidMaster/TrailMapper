@@ -45,7 +45,10 @@ public class MapMakerActivity extends AppCompatActivity implements TrailMapper.L
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        adapter = new SimplePagerAdapter<MakerFragment>(getSupportFragmentManager(), new NameMakerFragment());
+        NameMakerFragment nameFragment = new NameMakerFragment();
+        nameFragment.setListener(this);
+
+        adapter = new SimplePagerAdapter<MakerFragment>(getSupportFragmentManager(), nameFragment);
         viewPager.setAdapter(adapter);
 
         viewPager.setSwipingEnabled(false);
@@ -91,7 +94,7 @@ public class MapMakerActivity extends AppCompatActivity implements TrailMapper.L
     @Override
     public void onCompletionChanged(boolean isComplete) {
         viewPager.setSwipingEnabled(isComplete);
-        if (viewPager.getCurrentItem() == adapter.getCount() - 1)
+        if (adapter != null && viewPager.getCurrentItem() == adapter.getCount() - 1)
             trailMapper.addOfflineMap(map);
     }
 

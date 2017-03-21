@@ -2,7 +2,9 @@ package james.trailmapper.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,6 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import java.io.File;
 
@@ -134,8 +140,29 @@ public class NameMakerFragment extends MakerFragment {
         switch (requestCode) {
             case REQUEST_SELECT_IMAGE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    File file = new File(data.getData().getPath());
-                    if (getMap() != null) {
+                    String path = data.getDataString();
+                    try {
+                        Cursor cursor = getContext().getContentResolver().query(data.getData(), null, null, null, null);
+                        String documentId;
+                        if (cursor != null) {
+                            cursor.moveToFirst();
+                            documentId = cursor.getString(0);
+                            documentId = documentId.substring(documentId.lastIndexOf(":") + 1);
+                            cursor.close();
+                        } else break;
+
+                        cursor = getContext().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{documentId}, null);
+                        if (cursor != null) {
+                            cursor.moveToFirst();
+                            path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                            cursor.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    File file = new File(path);
+                    if (getMap() != null && file.exists()) {
                         getMap().offlineImage = file.getAbsolutePath();
                         isImageComplete = true;
                     }
@@ -146,9 +173,24 @@ public class NameMakerFragment extends MakerFragment {
                 break;
         }
 
-        changeComletion(isNameComplete && isImageComplete);
-        if (getMap() != null)
-            getMap().getDrawable(getContext()).into(imageView);
+        if (getMap() != null) {
+            getMap().getDrawable(getContext()).into(new GlideDrawableImageViewTarget(imageView) {
+                @Override
+                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                    super.onResourceReady(resource, animation);
+                    isImageComplete = true;
+                    changeComletion(isNameComplete);
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                    e.printStackTrace();
+                    isImageComplete = false;
+                    changeComletion(false);
+                }
+            });
+        }
 
         super.onActivityResult(requestCode, resultCode, data);
     }

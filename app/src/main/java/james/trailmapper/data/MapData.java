@@ -67,7 +67,7 @@ public class MapData implements Parcelable {
     }
 
     public DrawableTypeRequest getDrawable(Context context) {
-        return isOffline() ? Glide.with(context).load(new File(context.getApplicationInfo().dataDir, offlineImage)) : Glide.with(context).load(image);
+        return Glide.with(context).load(isOffline() ? new File(context.getApplicationInfo().dataDir, offlineImage) : image);
     }
 
     public boolean isOffline() {
