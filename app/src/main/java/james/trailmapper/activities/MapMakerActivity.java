@@ -48,7 +48,7 @@ public class MapMakerActivity extends AppCompatActivity implements TrailMapper.L
         NameMakerFragment nameFragment = new NameMakerFragment();
         nameFragment.setListener(this);
 
-        adapter = new SimplePagerAdapter<MakerFragment>(getSupportFragmentManager(), nameFragment);
+        adapter = new SimplePagerAdapter<MakerFragment>(getSupportFragmentManager(), nameFragment, new NameMakerFragment());
         viewPager.setAdapter(adapter);
 
         viewPager.setSwipingEnabled(false);
