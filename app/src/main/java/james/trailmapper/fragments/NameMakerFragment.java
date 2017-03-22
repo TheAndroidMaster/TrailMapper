@@ -20,6 +20,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import java.io.File;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,6 +102,13 @@ public class NameMakerFragment extends MakerFragment {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             File file = new File(getActivity().getExternalCacheDir(), String.valueOf(System.currentTimeMillis()) + ".png");
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
             getActivity().startActivityForResult(intent, REQUEST_TAKE_PICTURE);
 
