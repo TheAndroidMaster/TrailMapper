@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -101,16 +102,16 @@ public class NameMakerFragment extends MakerFragment {
     void takePicture() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            File file = new File(getActivity().getExternalCacheDir(), String.valueOf(System.currentTimeMillis()) + ".png");
+            File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(System.currentTimeMillis()) + ".jpg");
+
             try {
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-            getActivity().startActivityForResult(intent, REQUEST_TAKE_PICTURE);
+            startActivityForResult(intent, REQUEST_TAKE_PICTURE);
 
             if (getMap() != null)
                 getMap().offlineImage = file.getAbsolutePath();

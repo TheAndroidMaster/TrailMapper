@@ -1,6 +1,7 @@
 package james.trailmapper.data;
 
 import android.content.Context;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -71,7 +72,12 @@ public class MapData implements Parcelable {
             File file = new File(context.getApplicationInfo().dataDir, offlineImage);
             if (file.exists())
                 return Glide.with(context).load(file);
-            else return Glide.with(context).load(new File(offlineImage));
+
+            file = new File(Environment.getExternalStorageDirectory(), offlineImage);
+            if (file.exists())
+                return Glide.with(context).load(file);
+
+            return Glide.with(context).load(new File(offlineImage));
         } else return Glide.with(context).load(image);
     }
 
