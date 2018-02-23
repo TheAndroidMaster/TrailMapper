@@ -1,12 +1,13 @@
 package james.trailmapper.data;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
@@ -67,18 +68,18 @@ public class MapData implements Parcelable {
         return name;
     }
 
-    public DrawableTypeRequest getDrawable(Context context) {
+    public RequestBuilder<Bitmap> getDrawable(Context context) {
         if (isOffline()) {
             File file = new File(context.getApplicationInfo().dataDir, offlineImage);
             if (file.exists())
-                return Glide.with(context).load(file);
+                return Glide.with(context).asBitmap().load(file);
 
             file = new File(Environment.getExternalStorageDirectory(), offlineImage);
             if (file.exists())
-                return Glide.with(context).load(file);
+                return Glide.with(context).asBitmap().load(file);
 
-            return Glide.with(context).load(new File(offlineImage));
-        } else return Glide.with(context).load(image);
+            return Glide.with(context).asBitmap().load(new File(offlineImage));
+        } else return Glide.with(context).asBitmap().load(image);
     }
 
     public boolean isOffline() {

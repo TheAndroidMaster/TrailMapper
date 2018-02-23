@@ -3,7 +3,9 @@ package james.trailmapper.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,10 +20,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bumptech.glide.DrawableTypeRequest;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -94,12 +95,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         else
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
-        DrawableTypeRequest request = map.getDrawable(this);
+        RequestBuilder<Bitmap> request = map.getDrawable(this);
         if (request != null) {
-            request.thumbnail(0.1f).into(new SimpleTarget<GlideDrawable>() {
+            request.into(new SimpleTarget<Bitmap>() {
                 @Override
-                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                    setDrawable(resource);
+                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    setDrawable(new BitmapDrawable(getResources(), resource));
                 }
             });
         }

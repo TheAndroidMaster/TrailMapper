@@ -2,6 +2,7 @@ package james.trailmapper.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -12,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.DrawableTypeRequest;
+import com.bumptech.glide.RequestBuilder;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -62,10 +63,9 @@ public class MapDataAdapter extends RecyclerView.Adapter<MapDataAdapter.ViewHold
 
         holder.v.findViewById(R.id.offlineProgress).setVisibility(View.GONE);
 
-        DrawableTypeRequest request = map.getDrawable(activity);
-        if (request != null) {
-            request.crossFade().thumbnail(0.1f).into(((ImageView) holder.v.findViewById(R.id.image)));
-        }
+        RequestBuilder<Bitmap> request = map.getDrawable(activity);
+        if (request != null)
+            request.into(((ImageView) holder.v.findViewById(R.id.image)));
 
         holder.v.findViewById(R.id.action_directions).setOnClickListener(new View.OnClickListener() {
             @Override

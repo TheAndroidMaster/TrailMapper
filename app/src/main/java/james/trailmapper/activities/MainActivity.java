@@ -5,13 +5,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
-import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +25,6 @@ import james.trailmapper.fragments.ExploreFragment;
 import james.trailmapper.fragments.MapFragment;
 import james.trailmapper.fragments.OfflineFragment;
 import james.trailmapper.fragments.SettingsFragment;
-import james.trailmapper.fragments.SimpleFragment;
 import james.trailmapper.utils.ImageUtils;
 import james.trailmapper.views.SimpleViewPager;
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
     @BindView(R.id.viewPager)
     SimpleViewPager viewPager;
     @BindView(R.id.navigationView)
-    BottomNavigationView navigationView;
+    AHBottomNavigation navigationView;
 
     private TrailMapper trailMapper;
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
         ButterKnife.bind(this);
         trailMapper = (TrailMapper) getApplicationContext();
 
-        viewPager.setAdapter(new SimplePagerAdapter<SimpleFragment>(
+        viewPager.setAdapter(new SimplePagerAdapter<>(
                 getSupportFragmentManager(),
                 new ExploreFragment(),
                 new OfflineFragment(),
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
 
             @Override
             public void onPageSelected(int position) {
-                ((ViewGroup) navigationView.getChildAt(0)).getChildAt(position).callOnClick();
+                navigationView.setCurrentItem(position, false);
             }
 
             @Override
@@ -67,28 +67,12 @@ public class MainActivity extends AppCompatActivity implements TrailMapper.Liste
             }
         });
 
-        Menu menu = navigationView.getMenu();
-        menu.findItem(R.id.explore).setIcon(VectorDrawableCompat.create(getResources(), R.drawable.ic_explore, getTheme()));
-        menu.findItem(R.id.map).setIcon(VectorDrawableCompat.create(getResources(), R.drawable.ic_map, getTheme()));
-        menu.findItem(R.id.settings).setIcon(VectorDrawableCompat.create(getResources(), R.drawable.ic_settings, getTheme()));
-
-        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        new AHBottomNavigationAdapter(this, R.menu.menu_navigation).setupWithBottomNavigation(navigationView);
+        navigationView.setDefaultBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        navigationView.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.explore:
-                        viewPager.setCurrentItem(0);
-                        break;
-                    case R.id.offline:
-                        viewPager.setCurrentItem(1);
-                        break;
-                    case R.id.map:
-                        viewPager.setCurrentItem(2);
-                        break;
-                    case R.id.settings:
-                        viewPager.setCurrentItem(3);
-                        break;
-                }
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                viewPager.setCurrentItem(position);
                 return false;
             }
         });

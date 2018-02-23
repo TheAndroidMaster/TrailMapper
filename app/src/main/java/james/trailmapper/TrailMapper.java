@@ -13,15 +13,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 
-import com.bumptech.glide.DrawableTypeRequest;
-import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -45,7 +46,7 @@ import james.trailmapper.data.PositionData;
 
 public class TrailMapper extends Application implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String URL_MAPS = "https://theandroidmaster.github.io/TrailMaps/maps.json";
+    private static final String URL_MAPS = "https://jfenn.me/TrailMaps/maps.json";
 
     private static final String KEY_OFFLINE_MAPS = "offline";
 
@@ -171,11 +172,11 @@ public class TrailMapper extends Application implements LocationListener, Shared
 
     public void addOfflineMap(final MapData map) {
         if (!offlineMaps.contains(map)) {
-            DrawableTypeRequest request = map.getDrawable(this);
+            RequestBuilder<Bitmap> request = map.getDrawable(this);
             if (request != null) {
-                request.asBitmap().into(new SimpleTarget<Bitmap>() {
+                request.into(new SimpleTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         FileOutputStream out = null;
                         String offlineImage = map.getName().toLowerCase().replaceAll("\\s+", "_") + ".png";
 
